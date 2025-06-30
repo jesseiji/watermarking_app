@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageTk, ImageEnhance
+import time
 
 image_types = (
     ("PNG files", "*.png"),
@@ -15,7 +16,8 @@ images = {
     'start_l': None,
     'watermark_l': None,
     'start_lpho': None,
-    'watermark_lpho': None
+    'watermark_lpho': None,
+    'final_img': None,
 }
 
 def import_image(prefix, title, row, destroy_button=None, next_button=None):
@@ -39,10 +41,12 @@ def import_image(prefix, title, row, destroy_button=None, next_button=None):
             images[f'{prefix}_l'] = img_label
             images[f'{prefix}_lpho'] = photo
 
-            destroy_button.destroy()
-            next_button.grid(row=row+3, column=0, pady=20, columnspan=2)
+            destroy_button.grid_remove()
+            next_button.grid(row=row+2, column=0, pady=20, columnspan=2)
 
-def add_watermark(img, waterm):
+def add_watermark(img, waterm, current_button, next_button):
+    global images
+    current_button.grid_remove()
     if waterm.mode != 'RGBA':
         waterm = waterm.convert('RGBA')
 
@@ -53,6 +57,14 @@ def add_watermark(img, waterm):
     waterm.thumbnail((50, 50))
     region = waterm
     img.paste(region, (0, 0), region)
-    img.show()
+    final_img = img
+    images['final_img'] = final_img
 
+    file_path = None
+    while not file_path:
+        file_path = filedialog.asksaveasfilename(defaultextension=".png",
+                                                 filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
+        if file_path:
+            final_img.save(file_path)
 
+    next_button.grid(row=3, column=0, pady=20, columnspan=2)
