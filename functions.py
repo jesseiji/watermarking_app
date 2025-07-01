@@ -58,6 +58,7 @@ def add_watermark(img, waterm, current_button, next_button):
     region = waterm
     img.paste(region, (0, 0), region)
     final_img = img
+    final_img.show()
     images['final_img'] = final_img
 
     file_path = None
